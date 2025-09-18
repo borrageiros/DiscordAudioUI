@@ -37,20 +37,20 @@ docker build -t discord-audio-ui .
 
 ### 2. Docker Hub Images 📦
 
-This project is automatically built and pushed to [Docker Hub](https://hub.docker.com/r/borrageiros/DiscordAudioUI) for two different CPU architectures. You can pull the images directly instead of building them locally.
+This project is automatically built and pushed to [Docker Hub](https://hub.docker.com/r/borrageiros/discord-audio-ui) for two different CPU architectures. You can pull the images directly instead of building them locally.
 
--   **`borrageiros/DiscordAudioUI:latest`** (for `linux/amd64`)
+-   **`borrageiros/discord-audio-ui:latest`** (for `linux/amd64`)
     This is the standard image for most desktop PCs, servers, and cloud environments (Intel/AMD CPUs).
 
     ```bash
-    docker pull borrageiros/DiscordAudioUI:latest
+    docker pull borrageiros/discord-audio-ui:latest
     ```
 
--   **`borrageiros/DiscordAudioUI:arm64`** (for `linux/arm64`)
+-   **`borrageiros/discord-audio-ui:arm64`** (for `linux/arm64`)
     Use this image for ARM-based systems like Raspberry Pi, Apple Silicon (M1/M2/M3) Macs, or some cloud instances.
 
     ```bash
-    docker pull borrageiros/DiscordAudioUI:arm64
+    docker pull borrageiros/discord-audio-ui:arm64
     ```
 
 > **Note**: When running a custom script (`custom.sh`), make sure any software you install is compatible with the architecture of the image you are using!
@@ -64,13 +64,13 @@ Before the first run, you need to register the slash commands with Discord's API
 docker run --rm \
   -e DISCORD_TOKEN="YOUR_DISCORD_TOKEN" \
   -e DISCORD_CLIENT_ID="YOUR_DISCORD_CLIENT_ID" \
-  borrageiros/DiscordAudioUI:latest yarn register:commands
+  borrageiros/discord-audio-ui:latest yarn register:commands
 
 # For arm64 systems
 docker run --rm \
   -e DISCORD_TOKEN="YOUR_DISCORD_TOKEN" \
   -e DISCORD_CLIENT_ID="YOUR_DISCORD_CLIENT_ID" \
-  borrageiros/DiscordAudioUI:arm64 yarn register:commands
+  borrageiros/discord-audio-ui:arm64 yarn register:commands
 ```
 
 > **Note**: You only need to do this once, or whenever you change the command definitions.
