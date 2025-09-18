@@ -1,0 +1,4 @@
+load-module module-native-protocol-unix auth-anonymous=1
+load-module module-null-sink sink_name=Virtual_Sink sink_properties=device.description=Virtual_Sink rate=48000 channels=2
+set-default-sink Virtual_Sink
+

@@ -1,0 +1,29 @@
+#!/bin/sh
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+
+export DISPLAY=:1
+export XDG_RUNTIME_DIR=/tmp/runtime-appuser
+export XDG_CONFIG_HOME="$HOME/.config"
+export GDK_BACKEND=x11
+export XDG_CURRENT_DESTOP=XFCE
+
+mkdir -p "$XDG_RUNTIME_DIR"
+xrdb "$HOME/.Xresources" 2>/dev/null || true
+
+if [ ! -S "$XDG_RUNTIME_DIR/bus" ]; then
+  dbus-daemon --session --address="unix:path=$XDG_RUNTIME_DIR/bus" --fork
+fi
+export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+
+pgrep -x xfconfd >/dev/null 2>&1 || xfconfd &
+sleep 0.5
+
+pgrep -x xfsettingsd >/dev/null 2>&1 || xfsettingsd --sm-client-disable &
+pgrep -x xfwm4 >/dev/null 2>&1 || xfwm4 --compositor=off --sm-client-disable &
+pgrep -x xfdesktop >/dev/null 2>&1 || xfdesktop --sm-client-disable &
+
+# Ensure panel starts clean after other components are up
+pkill xfce4-panel || true
+sleep 0.5
+xfce4-panel --disable-wm-check &
