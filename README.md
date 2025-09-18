@@ -2,7 +2,7 @@
 
 A powerful Dockerized solution to stream audio from a virtual desktop environment directly into a Discord voice channel. Manage a full Linux Desktop UI through your browser and share the audio output with your friends on Discord. Perfect for watch parties, music listening sessions, and more! 🥳
 
-![Discord Audio UI Streamer]https://raw.githubusercontent.com/borrageiros/DiscordAudioUI/refs/heads/master/screenshot.png)
+![Discord Audio UI Streamer](https://raw.githubusercontent.com/borrageiros/DiscordAudioUI/refs/heads/master/screenshot.png)
 
 ---
 
