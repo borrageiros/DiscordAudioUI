@@ -124,6 +124,7 @@ The container is configured using environment variables.
 | `ACTIVITY_TYPE` | Sets the bot's activity type. Can be `Playing`, `Streaming`, `Listening`, `Watching`, `Competing`.                      | `Listening`              |
 | `ACTIVITY`      | Sets the text for the bot's activity (e.g., "Listening to **music**").                                                  | `music`                  |
 | `PULSE_SOURCE`  | The PulseAudio source to capture audio from.                                                                          | `Virtual_Sink.monitor`   |
+| `ROOT_PASSWORD` | If set, the system password for `appuser` will use this value. Falls back to `VNC_PASSWORD` when unset.               | unset                    |
 | `TZ`            | Sets the timezone for the container, e.g., `America/New_York`.                                                        | `Etc/UTC`                |
 | `LANG`          | Sets the locale for the container, e.g., `en_US.UTF-8`.                                                               | `C.UTF-8`                |
 

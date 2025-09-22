@@ -10,3 +10,7 @@ dist
 .local
 data/
 custom-commands.sh
+screenshot.png
+Dockerfile
+README.md
+apache-proxy.conf

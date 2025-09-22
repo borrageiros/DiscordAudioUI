@@ -214,7 +214,7 @@ client.on("interactionCreate", async (interaction) => {
     try {
       await joinAndStream(interaction.guildId, voiceChannel.id);
 
-      const url = `${frontendUrl}/vnc.html?resize=scale&autoconnect=true&password=${vncPassword}`;
+      const url = `${frontendUrl}/vnc.html?autoconnect=true&resize=scale&password=${vncPassword}&quality=6&compression=2&cursor=local&enableWebP=true&reconnect=true&reconnect_delay=2000`;
 
       const linkButton = new ButtonBuilder()
         .setLabel("Open Web UI")

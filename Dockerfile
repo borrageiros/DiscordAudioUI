@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     locales \
     ca-certificates curl git supervisor \
     pulseaudio-utils pulseaudio alsa-utils pavucontrol pasystray \
-    tightvncserver xfce4 xfce4-goodies xfce4-terminal \
+    tigervnc-standalone-server tigervnc-common xfce4 xfce4-goodies xfce4-terminal \
     novnc websockify xfonts-base xauth \
     dbus-x11 x11-xserver-utils build-essential python3 make g++ pkg-config libopus-dev \
     libgl1-mesa-glx \
@@ -48,11 +48,15 @@ RUN yarn install --mode=skip-build || yarn install
 
 COPY config/xfce4 /home/appuser/.config/xfce4
 RUN rm -f /etc/xdg/autostart/xfce4-power-manager.desktop
+RUN rm -f /etc/xdg/autostart/xfce4-screensaver.desktop || true
+RUN apt-get purge -y xfce4-screensaver light-locker xscreensaver || true && \
+    apt-get autoremove -y && apt-get clean
 
-# Create Desktop directory and Firefox shortcut
+# Create Desktop directory and Firefox, VLC shortcuts
 RUN mkdir -p /home/appuser/Desktop && \
     cp /usr/share/applications/firefox.desktop /home/appuser/Desktop/ && \
-    chmod +x /home/appuser/Desktop/firefox.desktop
+    cp /usr/share/applications/vlc.desktop /home/appuser/Desktop/ && \
+    chmod +x /home/appuser/Desktop/*.desktop
 
 # Patch @discordjs/voice to accept *_rtpsize modes by mapping them to supported xsalsa20 modes
 RUN true

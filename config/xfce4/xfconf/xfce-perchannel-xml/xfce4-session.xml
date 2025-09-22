@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-session" version="1.0">
+  <property name="general" type="empty">
+    <property name="LockCommand" type="string" value=""/>
+    <property name="logout_prompt" type="bool" value="false"/>
+    <property name="session_autosave" type="bool" value="false"/>
+  </property>
+</channel>
+
+
