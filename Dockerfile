@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     locales \
     ca-certificates curl git supervisor \
     pulseaudio-utils pulseaudio alsa-utils pavucontrol pasystray \
-    tigervnc-standalone-server tigervnc-common xfce4 xfce4-goodies xfce4-terminal \
+    tigervnc-standalone-server tigervnc-common xfce4 xfce4-goodies xfce4-terminal wmctrl x11-utils \
     novnc websockify xfonts-base xauth \
     dbus-x11 x11-xserver-utils build-essential python3 make g++ pkg-config libopus-dev \
     libgl1-mesa-glx \

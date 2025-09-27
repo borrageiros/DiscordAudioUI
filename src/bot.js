@@ -107,6 +107,13 @@ function startStreamingLoop() {
   player.play(resource);
 }
 
+async function closeAllApps() {
+  try {
+    const cmd = "ids=$(wmctrl -lx | awk '!/xfce4-panel\.Xfce4-panel|xfdesktop\.Xfdesktop|xfce4-session-logout/ {print $1}'); for w in $ids; do wmctrl -ic $w || true; done; pkill -f xfce4-session-logout || true; sleep 0.5; rem=$(xprop -root _NET_CLIENT_LIST 2>/dev/null | tr -d ',' | awk '{for(i=5;i<=NF;i++) print $i}'); for w in $rem; do xwininfo -id $w 2>/dev/null | grep -qi 'xfce4-session-logout' && continue; xkill -id $w || true; done";
+    spawn("bash", ["-lc", cmd], { stdio: ["ignore", "ignore", "inherit"] });
+  } catch { }
+}
+
 async function joinAndStream(targetGuildId, targetChannelId) {
   const guild = await client.guilds.fetch(targetGuildId);
   const channel = await guild.channels.fetch(targetChannelId);
@@ -185,6 +192,7 @@ client.on("voiceStateUpdate", (oldState, newState) => {
   const channel = oldState.channel;
   if (channel && channel.members.size === 1 && channel.members.has(client.user.id)) {
     console.log("Bot is alone in the channel, disconnecting.");
+    closeAllApps();
     currentConnection.destroy();
     currentConnection = null;
   }
