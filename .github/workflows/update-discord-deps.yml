@@ -1,0 +1,144 @@
+name: Update Discord.js Dependencies
+
+on:
+  workflow_dispatch:
+    inputs:
+      update_discord_js:
+        description: "Update discord.js"
+        required: false
+        default: "true"
+        type: boolean
+      update_discordjs_voice:
+        description: "Update @discordjs/voice"
+        required: false
+        default: "true"
+        type: boolean
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    environment: BORRAGEIROS-ENV
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "yarn"
+
+      - name: Setup Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@4.3.1 --activate
+
+      - name: Get latest versions
+        id: versions
+        run: |
+          if [ "${{ inputs.update_discord_js }}" == "true" ]; then
+            DISCORD_JS_VERSION=$(npm view discord.js version)
+            echo "discord_js_version=$DISCORD_JS_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+          if [ "${{ inputs.update_discordjs_voice }}" == "true" ]; then
+            DISCORDJS_VOICE_VERSION=$(npm view @discordjs/voice version)
+            echo "discordjs_voice_version=$DISCORDJS_VOICE_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update package.json
+        run: |
+          if [ "${{ inputs.update_discord_js }}" == "true" ]; then
+            npm pkg set "dependencies.discord.js=^${{ steps.versions.outputs.discord_js_version }}"
+          fi
+
+          if [ "${{ inputs.update_discordjs_voice }}" == "true" ]; then
+            npm pkg set "dependencies.@discordjs/voice=^${{ steps.versions.outputs.discordjs_voice_version }}"
+          fi
+
+      - name: Install dependencies
+        run: yarn install --mode=update-lockfile
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet package.json yarn.lock; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build commit message
+        if: steps.changes.outputs.has_changes == 'true'
+        id: commit_msg
+        run: |
+          MSG="chore: update Discord.js dependencies\n\n"
+          if [ "${{ inputs.update_discord_js }}" == "true" ]; then
+            MSG="${MSG}- discord.js: ^${{ steps.versions.outputs.discord_js_version }}\n"
+          fi
+          if [ "${{ inputs.update_discordjs_voice }}" == "true" ]; then
+            MSG="${MSG}- @discordjs/voice: ^${{ steps.versions.outputs.discordjs_voice_version }}\n"
+          fi
+
+          {
+            echo "commit_message<<EOF"
+            echo -e "$MSG"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          BODY="## Updated Dependencies\n\n"
+          if [ "${{ inputs.update_discord_js }}" == "true" ]; then
+            BODY="${BODY}- **discord.js**: ^${{ steps.versions.outputs.discord_js_version }}\n"
+          fi
+          if [ "${{ inputs.update_discordjs_voice }}" == "true" ]; then
+            BODY="${BODY}- **@discordjs/voice**: ^${{ steps.versions.outputs.discordjs_voice_version }}\n"
+          fi
+          BODY="${BODY}\nThis PR was automatically created by the Update Discord.js Dependencies workflow.\n"
+
+          {
+            echo "pr_body<<EOF"
+            echo -e "$BODY"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          commit-message: ${{ steps.commit_msg.outputs.commit_message }}
+          title: "chore: update Discord.js dependencies"
+          body: ${{ steps.commit_msg.outputs.pr_body }}
+          branch: update-discord-deps
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+          draft: false
+          author: borrageiros <adrianborrageirosmourelos@gmail.com>
+          committer: GitHub <noreply@github.com>
+
+      - name: Summary - No changes
+        if: steps.changes.outputs.has_changes == 'false'
+        run: |
+          echo "## ✅ No updates needed" >> $GITHUB_STEP_SUMMARY
+          echo "All dependencies are already up to date." >> $GITHUB_STEP_SUMMARY
+
+      - name: Summary - Changes made
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          echo "## ✅ Dependencies updated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.update_discord_js }}" == "true" ]; then
+            echo "- **discord.js**: ^${{ steps.versions.outputs.discord_js_version }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ "${{ inputs.update_discordjs_voice }}" == "true" ]; then
+            echo "- **@discordjs/voice**: ^${{ steps.versions.outputs.discordjs_voice_version }}" >> $GITHUB_STEP_SUMMARY
+          fi
